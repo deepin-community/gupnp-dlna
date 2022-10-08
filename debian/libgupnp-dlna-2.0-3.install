@@ -1,0 +1,3 @@
+usr/lib/*/*.so.*
+usr/lib/*/gupnp-dlna/libgstreamer.so
+usr/share/gupnp-dlna-2.0/dlna-profiles/*

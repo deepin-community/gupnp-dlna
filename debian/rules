@@ -1,0 +1,31 @@
+#! /usr/bin/make -f
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,-O1 -Wl,-z,defs -Wl,--as-needed
+
+%:
+	dh $@ --with gnome,gir
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		--enable-debug --enable-gtk-doc
+
+override_dh_auto_build:
+	dh_auto_build --no-parallel
+
+override_dh_makeshlibs:
+	dh_makeshlibs -- -c4
+
+override_dh_strip:
+	dh_strip --dbgsym-migration='libgupnp-dlna-2.0-dbg (<< 0.10.5-2~)'
+
+override_dh_install:
+	# rename gupnp-dlna-*-2.0 binaries to not have the -2.0 postfix
+	for program in debian/tmp/usr/bin/gupnp-dlna-*-2.0 ; do \
+		mv $$program $${program%%-2.0} ; \
+	done
+	find debian/tmp -name '*.la' -print -delete
+	dh_install
+
+override_dh_missing:
+	dh_missing --fail-missing
